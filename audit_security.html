@@ -5,108 +5,130 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Аудит безопасности — Лабораторная работа №7</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #121212;
-            background-image: radial-gradient(circle at 15% 30%, #1e272e 0%, #0a0c10 100%);
-            color: #d4d4d4;
-            line-height: 1.5;
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            color: #f0f0f0;
+            line-height: 1.6;
             padding: 20px;
             min-height: 100vh;
         }
         .container {
-            max-width: 1100px;
+            max-width: 1200px;
             margin: 0 auto;
-            background: #1e1e1e;
-            border-radius: 20px;
-            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.5);
+            background: rgba(30, 30, 46, 0.95);
+            backdrop-filter: blur(2px);
+            border-radius: 28px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
             overflow: hidden;
-            border: 1px solid #2c2c2c;
         }
         .header {
-            background: #252525;
-            padding: 25px 30px;
-            border-bottom: 1px solid #3a3a3a;
+            padding: 30px 40px;
+            border-bottom: 1px solid #3a3a5a;
         }
-        .header h1 { color: #d99e4c; font-size: 2rem; margin-bottom: 5px; }
-        .header p { color: #a0a0a0; }
+        .header h1 {
+            background: linear-gradient(90deg, #00d2ff 0%, #3a7bd5 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        .header p {
+            color: #a0a0a0;
+        }
         h2 {
-            color: #d99e4c;
-            border-bottom: 2px solid #b87333;
-            padding-bottom: 8px;
-            margin: 30px 30px 20px 30px;
+            color: #00d2ff;
+            border-left: 4px solid #00d2ff;
+            padding: 0 0 0 20px;
+            margin: 30px 40px 20px 40px;
             font-size: 1.5rem;
         }
         .vuln-block {
-            background: #2a2a2a;
+            background: #1e1e2e;
             margin: 20px 30px;
-            border-radius: 16px;
-            padding: 20px;
-            border-left: 5px solid #b87333;
+            border-radius: 20px;
+            padding: 25px;
+            border-left: 4px solid #00d2ff;
         }
         .vuln-title {
             font-size: 1.3rem;
             font-weight: bold;
-            margin-bottom: 10px;
-            color: #e6a177;
+            margin-bottom: 15px;
+            color: #00d2ff;
         }
         .screenshot {
             text-align: center;
-            margin: 15px 0;
+            margin: 20px 0;
         }
         .screenshot img {
             max-width: 80%;
-            border-radius: 12px;
-            border: 1px solid #b87333;
-            background: #1a1a1a;
-            padding: 8px;
+            border-radius: 16px;
+            border: 1px solid #3a3a5a;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
         .caption {
             font-size: 0.85rem;
-            color: #aaa;
-            margin-top: 6px;
-            text-align: center;
+            color: #888;
+            margin-top: 8px;
         }
         .back-link {
             margin: 30px 0 20px;
             text-align: center;
-            border-top: 1px solid #2c2c2c;
+            border-top: 1px solid #3a3a5a;
             padding-top: 25px;
         }
         .back-link a {
             display: inline-block;
-            background: #b87333;
+            background: linear-gradient(90deg, #00d2ff 0%, #3a7bd5 100%);
             color: white;
             text-decoration: none;
-            padding: 10px 22px;
+            padding: 10px 25px;
             border-radius: 30px;
-            font-weight: 600;
+            font-weight: 500;
             margin: 0 10px;
+            transition: all 0.3s ease;
         }
-        .back-link a:hover { background: #9e5e28; transform: translateY(-1px); }
+        .back-link a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 210, 255, 0.3);
+        }
         table {
             width: 100%;
             border-collapse: collapse;
             margin: 15px 0;
+            background: #1e1e2e;
+            border-radius: 16px;
+            overflow: hidden;
         }
         th, td {
-            border: 1px solid #444;
-            padding: 10px;
+            border: 1px solid #3a3a5a;
+            padding: 12px;
             text-align: left;
             vertical-align: top;
         }
         th {
-            background: #333;
-            color: #d99e4c;
+            background: linear-gradient(90deg, #2a2a4a 0%, #1e1e3e 100%);
+            color: #00d2ff;
         }
         footer {
-            background: #252525;
             text-align: center;
-            padding: 15px;
-            color: #aaa;
+            padding: 20px;
+            color: #888;
             font-size: 0.85rem;
-            margin-top: 30px;
+            border-top: 1px solid #3a3a5a;
+        }
+        code {
+            background: #2a2a3a;
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            color: #00d2ff;
         }
     </style>
 </head>
@@ -118,12 +140,10 @@
         <p><strong>Студент:</strong> u82460 | <strong>Дата:</strong> 28 мая 2026</p>
     </div>
 
-    <!-- XSS -->
     <h2>1. XSS (Cross-Site Scripting)</h2>
     <div class="vuln-block">
         <div class="vuln-title">🔍 Проблема</div>
         <p>Данные, введённые пользователем, выводились в HTML-страницы без экранирования. Это позволяло злоумышленнику внедрять вредоносный JavaScript-код.</p>
-        <p><strong>Чем грозило:</strong> кража сессионных cookies, перенаправление на фишинговые сайты, подмена содержимого страницы.</p>
         <div class="vuln-title">✅ Решение</div>
         <p>Применена функция <code>htmlspecialchars()</code> ко всем данным, выводимым в HTML.</p>
         <div class="screenshot"><img src="0_XSS.png" alt="XSS в форме"><div class="caption">Скриншот 1: Экранирование в форме</div></div>
@@ -131,11 +151,8 @@
         <div class="screenshot"><img src="2_XSS.png" alt="XSS в admin.php"><div class="caption">Скриншот 3: Экранирование в admin.php</div></div>
     </div>
 
-    <!-- Information Disclosure -->
     <h2>2. Information Disclosure</h2>
     <div class="vuln-block">
-        <div class="vuln-title">🔍 Проблема</div>
-        <p>При ошибках БД выводились детали исключения (логин, хост, имя БД).</p>
         <div class="screenshot"><img src="3_ID.png" alt="Уязвимый код"><div class="caption">Скриншот 4: Уязвимый код — die($e->getMessage())</div></div>
         <div class="screenshot"><img src="4_ID.png" alt="Пример ошибки"><div class="caption">Скриншот 5: Пример вывода деталей ошибки</div></div>
         <div class="vuln-title">✅ Решение</div>
@@ -144,22 +161,16 @@
         <div class="screenshot"><img src="6_ID.png" alt="Общее сообщение"><div class="caption">Скриншот 7: Пользователь видит только общее сообщение</div></div>
     </div>
 
-    <!-- SQL Injection -->
     <h2>3. SQL Injection</h2>
     <div class="vuln-block">
-        <div class="vuln-title">🔍 Проблема</div>
-        <p>Использование конкатенации пользовательских данных в SQL-запросах.</p>
         <div class="vuln-title">✅ Решение</div>
         <p>Используются подготовленные запросы (PDO prepare/execute) во всех взаимодействиях с БД.</p>
         <div class="screenshot"><img src="7_SQL_index.png" alt="Подготовленный запрос"><div class="caption">Скриншот 8: Подготовленный запрос в index.php</div></div>
         <div class="screenshot"><img src="8_SQL_admin.png" alt="Подготовленный запрос в admin.php"><div class="caption">Скриншот 9: Подготовленный запрос UPDATE в admin.php</div></div>
     </div>
 
-    <!-- CSRF -->
-    <h2>4. CSRF (Cross-Site Request Forgery)</h2>
+    <h2>4. CSRF</h2>
     <div class="vuln-block">
-        <div class="vuln-title">🔍 Проблема</div>
-        <p>Отсутствие защиты от подделки межсайтовых запросов.</p>
         <div class="vuln-title">✅ Решение</div>
         <p>Генерация уникального токена на сессию, его передача в скрытом поле формы и проверка при POST-запросе.</p>
         <div class="screenshot"><img src="9_CSRF.png" alt="Генерация токена"><div class="caption">Скриншот 10: Генерация CSRF-токена</div></div>
@@ -167,18 +178,12 @@
         <div class="screenshot"><img src="11_CSRF.png" alt="Проверка токена"><div class="caption">Скриншот 12: Проверка токена в обработчике</div></div>
     </div>
 
-    <!-- Include / Upload -->
     <h2>5. Include / Upload уязвимости</h2>
     <div class="vuln-block">
-        <div class="vuln-title">🔍 Проблема</div>
-        <p>Потенциальная опасность динамического включения файлов и загрузки файлов на сервер.</p>
         <div class="vuln-title">✅ Решение</div>
-        <p>1. Все include используют только фиксированные имена файлов.<br>
-        2. Функционал загрузки файлов отсутствует.<br>
-        3. Временные файлы (test.php, hash_gen.php) удалены.</p>
+        <p>Все include используют только фиксированные имена файлов. Функционал загрузки файлов отсутствует. Временные файлы удалены.</p>
     </div>
 
-    <!-- Заключение -->
     <h2>Заключение</h2>
     <div class="vuln-block">
         <table>
@@ -197,10 +202,7 @@
         <a href="admin.php">🔧 Админ-панель</a>
     </div>
 
-    <footer>
-        Лабораторная работа №7 — Аудит безопасности<br>
-        Студент: u82460
-    </footer>
+    <footer>Лабораторная работа №7 — Аудит безопасности<br>Студент: u82460</footer>
 </div>
 </body>
 </html>
