@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Аудит безопасности — Лабораторная работа №7</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #121212;
+            background-image: radial-gradient(circle at 15% 30%, #1e272e 0%, #0a0c10 100%);
+            color: #d4d4d4;
+            line-height: 1.5;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: #1e1e1e;
+            border-radius: 20px;
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            border: 1px solid #2c2c2c;
+        }
+        .header {
+            background: #252525;
+            padding: 25px 30px;
+            border-bottom: 1px solid #3a3a3a;
+        }
+        .header h1 { color: #d99e4c; font-size: 2rem; margin-bottom: 5px; }
+        .header p { color: #a0a0a0; }
+        h2 {
+            color: #d99e4c;
+            border-bottom: 2px solid #b87333;
+            padding-bottom: 8px;
+            margin: 30px 30px 20px 30px;
+            font-size: 1.5rem;
+        }
+        .vuln-block {
+            background: #2a2a2a;
+            margin: 20px 30px;
+            border-radius: 16px;
+            padding: 20px;
+            border-left: 5px solid #b87333;
+        }
+        .vuln-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #e6a177;
+        }
+        .screenshot {
+            text-align: center;
+            margin: 15px 0;
+        }
+        .screenshot img {
+            max-width: 80%;
+            border-radius: 12px;
+            border: 1px solid #b87333;
+            background: #1a1a1a;
+            padding: 8px;
+        }
+        .caption {
+            font-size: 0.85rem;
+            color: #aaa;
+            margin-top: 6px;
+            text-align: center;
+        }
+        .back-link {
+            margin: 30px 0 20px;
+            text-align: center;
+            border-top: 1px solid #2c2c2c;
+            padding-top: 25px;
+        }
+        .back-link a {
+            display: inline-block;
+            background: #b87333;
+            color: white;
+            text-decoration: none;
+            padding: 10px 22px;
+            border-radius: 30px;
+            font-weight: 600;
+            margin: 0 10px;
+        }
+        .back-link a:hover { background: #9e5e28; transform: translateY(-1px); }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #444;
+            padding: 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            background: #333;
+            color: #d99e4c;
+        }
+        footer {
+            background: #252525;
+            text-align: center;
+            padding: 15px;
+            color: #aaa;
+            font-size: 0.85rem;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🔒 Аудит безопасности</h1>
+        <p>Лабораторная работа №7 — анализ и исправление уязвимостей</p>
+        <p><strong>Студент:</strong> u82460 | <strong>Дата:</strong> 28 мая 2026</p>
+    </div>
+
+    <!-- XSS -->
+    <h2>1. XSS (Cross-Site Scripting)</h2>
+    <div class="vuln-block">
+        <div class="vuln-title">🔍 Проблема</div>
+        <p>Данные, введённые пользователем, выводились в HTML-страницы без экранирования. Это позволяло злоумышленнику внедрять вредоносный JavaScript-код.</p>
+        <p><strong>Чем грозило:</strong> кража сессионных cookies, перенаправление на фишинговые сайты, подмена содержимого страницы.</p>
+        <div class="vuln-title">✅ Решение</div>
+        <p>Применена функция <code>htmlspecialchars()</code> ко всем данным, выводимым в HTML.</p>
+        <div class="screenshot"><img src="0_XSS.png" alt="XSS в форме"><div class="caption">Скриншот 1: Экранирование в форме</div></div>
+        <div class="screenshot"><img src="1_XSS.png" alt="XSS в view.php"><div class="caption">Скриншот 2: Экранирование в view.php</div></div>
+        <div class="screenshot"><img src="2_XSS.png" alt="XSS в admin.php"><div class="caption">Скриншот 3: Экранирование в admin.php</div></div>
+    </div>
+
+    <!-- Information Disclosure -->
+    <h2>2. Information Disclosure</h2>
+    <div class="vuln-block">
+        <div class="vuln-title">🔍 Проблема</div>
+        <p>При ошибках БД выводились детали исключения (логин, хост, имя БД).</p>
+        <div class="screenshot"><img src="3_ID.png" alt="Уязвимый код"><div class="caption">Скриншот 4: Уязвимый код — die($e->getMessage())</div></div>
+        <div class="screenshot"><img src="4_ID.png" alt="Пример ошибки"><div class="caption">Скриншот 5: Пример вывода деталей ошибки</div></div>
+        <div class="vuln-title">✅ Решение</div>
+        <p>Детали ошибки отправляются в лог (<code>error_log()</code>), пользователь видит общее сообщение.</p>
+        <div class="screenshot"><img src="5_ID.png" alt="Исправленный код"><div class="caption">Скриншот 6: Исправленный код</div></div>
+        <div class="screenshot"><img src="6_ID.png" alt="Общее сообщение"><div class="caption">Скриншот 7: Пользователь видит только общее сообщение</div></div>
+    </div>
+
+    <!-- SQL Injection -->
+    <h2>3. SQL Injection</h2>
+    <div class="vuln-block">
+        <div class="vuln-title">🔍 Проблема</div>
+        <p>Использование конкатенации пользовательских данных в SQL-запросах.</p>
+        <div class="vuln-title">✅ Решение</div>
+        <p>Используются подготовленные запросы (PDO prepare/execute) во всех взаимодействиях с БД.</p>
+        <div class="screenshot"><img src="7_SQL_index.png" alt="Подготовленный запрос"><div class="caption">Скриншот 8: Подготовленный запрос в index.php</div></div>
+        <div class="screenshot"><img src="8_SQL_admin.png" alt="Подготовленный запрос в admin.php"><div class="caption">Скриншот 9: Подготовленный запрос UPDATE в admin.php</div></div>
+    </div>
+
+    <!-- CSRF -->
+    <h2>4. CSRF (Cross-Site Request Forgery)</h2>
+    <div class="vuln-block">
+        <div class="vuln-title">🔍 Проблема</div>
+        <p>Отсутствие защиты от подделки межсайтовых запросов.</p>
+        <div class="vuln-title">✅ Решение</div>
+        <p>Генерация уникального токена на сессию, его передача в скрытом поле формы и проверка при POST-запросе.</p>
+        <div class="screenshot"><img src="9_CSRF.png" alt="Генерация токена"><div class="caption">Скриншот 10: Генерация CSRF-токена</div></div>
+        <div class="screenshot"><img src="10_CSRF.png" alt="Скрытое поле"><div class="caption">Скриншот 11: Скрытое поле в форме</div></div>
+        <div class="screenshot"><img src="11_CSRF.png" alt="Проверка токена"><div class="caption">Скриншот 12: Проверка токена в обработчике</div></div>
+    </div>
+
+    <!-- Include / Upload -->
+    <h2>5. Include / Upload уязвимости</h2>
+    <div class="vuln-block">
+        <div class="vuln-title">🔍 Проблема</div>
+        <p>Потенциальная опасность динамического включения файлов и загрузки файлов на сервер.</p>
+        <div class="vuln-title">✅ Решение</div>
+        <p>1. Все include используют только фиксированные имена файлов.<br>
+        2. Функционал загрузки файлов отсутствует.<br>
+        3. Временные файлы (test.php, hash_gen.php) удалены.</p>
+    </div>
+
+    <!-- Заключение -->
+    <h2>Заключение</h2>
+    <div class="vuln-block">
+        <table>
+            <tr><th>Уязвимость</th><th>Метод защиты</th></tr>
+            <tr><td><strong>XSS</strong></td><td><code>htmlspecialchars()</code> при выводе</td></tr>
+            <tr><td><strong>Information Disclosure</strong></td><td><code>error_log()</code> + общее сообщение</td></tr>
+            <tr><td><strong>SQL Injection</strong></td><td>Подготовленные запросы (PDO prepare/execute)</td></tr>
+            <tr><td><strong>CSRF</strong></td><td>Генерация и проверка CSRF-токенов</td></tr>
+            <tr><td><strong>Include / Upload</strong></td><td>Нет динамических include, нет загрузки файлов</td></tr>
+        </table>
+        <p><strong>Вывод:</strong> Все выявленные уязвимости устранены. Приложение соответствует базовым требованиям безопасной разработки.</p>
+    </div>
+
+    <div class="back-link">
+        <a href="index.php">← Вернуться к форме</a>
+        <a href="admin.php">🔧 Админ-панель</a>
+    </div>
+
+    <footer>
+        Лабораторная работа №7 — Аудит безопасности<br>
+        Студент: u82460
+    </footer>
+</div>
+</body>
+</html>
